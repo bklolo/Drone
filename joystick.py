@@ -18,7 +18,7 @@ def Joystick_Init():
     count = 0
     for i in joysticks:
         print(count, i.device)
-        count+=1
+        count += 1
 
     print(joystick.device)
     for x in joystick.device.get_controls():
@@ -37,30 +37,27 @@ def processInputs():
     rz = joystick.z  # ?
     print('x: {}\ny: {}\nz: {}'.format(x, y, z))
     print()
+
     # Convert joystick values to int
     xConv = convertToInt(x)
     yConv = convertToInt(y)
     zConv = convertToInt(z)
-    print('x: {}\ny: {}\nz: {}'.format(xConv, yConv, zConv))
+    print('xConv: {}\nyConv: {}\nzConv: {}'.format(xConv, yConv, zConv))
     print()
-    elements = [xConv, yConv, zConv]
+
+    elements = [xConv, yConv, zConv, 0, 0, 0, 0, 0]
     data = bytearray(elements)
-    data2 = bytearray()
-    # print("data2: ", data2)
-    data2.extend(data[0:2])
-    # print("data2: ", data2)
-    data2.extend(data[2:5])
     vect = list(data)
     print(vect)
 
     # Write inputs to Remote Xbee
     arduinoData.write(vect)
 
-    # Read back data from Remote XBee
-    arduinoString = arduinoData.readline()
-    arduinoString = str(arduinoString, encoding='utf-8')
-    print("from Remote: ", arduinoString)
-    time.sleep(0.1)
+    # # Read back data from Remote XBee
+    # arduinoString = arduinoData.readline()                # (causes delay)
+    # arduinoString = str(arduinoString, encoding='utf-8')
+    # print("from Remote: ", arduinoString)
+    # time.sleep(1)
 
 
 # Convert controller data to int for processing
@@ -68,6 +65,16 @@ def convertToInt(value):
     value = int(math.ceil(value * 10) + 10)
     return value
 
+def periodicFunc(dt):       # can control write data w/ specified periodicity
+    print("triggered")
+
+def checkSerial(dt):       # serial test
+    n = arduinoData.in_waiting
+    if n > 0:
+        databytes = arduinoData.read(n)
+        arduinoString = str(databytes, encoding='utf-8')
+        print("n: ", n)
+        print("checkSerial: ", arduinoString)
 
 ################################# End define functions #################################
 
@@ -85,4 +92,7 @@ def on_joyaxis_motion(stick, axis, value):
     processInputs()
 
 
+pyglet.clock.schedule_interval(checkSerial, 0.1)
+
+# Run app (must be last func)
 pyglet.app.run()

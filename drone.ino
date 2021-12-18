@@ -9,8 +9,6 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55);  // IMU instance
 int sensorValue, mappedValue;               // pot vals
 int incomingByte[8];                        // incoming serial data
 int xValue = 0;
-int incomingByte0 = 0; // for incoming serial data
-
 
 void setup()
 {
@@ -69,18 +67,16 @@ void loop()
     if (Serial.available()) {
         incomingByte[n++] = Serial.read();
     }
-    else {
-      Serial.print("");
-    }
+    else {}
   }
 
   n = 0;
   while(n < 8)
   {
-    Serial.print(incomingByte[n++]);
+    Serial.write(64 + incomingByte[n++]);
   }
   
-  Serial.println("");
+  Serial.write(10);
 
   sensorValue = analogRead(A0);                       // Read input from analog pin a0 and store in val
   mappedValue = map(sensorValue, 0, 1023,1000,2000);  // Mapping val to min and max //1021?
@@ -103,5 +99,4 @@ void loop()
   Serial.println("");
 */
   delay(500);
-
 }
