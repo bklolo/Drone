@@ -8,7 +8,6 @@ Servo esc5,esc6,esc7,esc8;                  // ESCs, respective pinout
 Adafruit_BNO055 bno = Adafruit_BNO055(55);  // IMU instance
 int sensorValue, mappedValue;               // pot vals
 int incomingByte[8];                        // incoming serial data
-int xValue = 0;
 
 void setup()
 {
@@ -48,35 +47,32 @@ void loop()
   // ALL ADJUSTMENTS MUST BE SYMMETRICAL
 
 // Purge any old data
-  while (Serial.available()) 
-  {
-    Serial.read();
-  }
+//  while (Serial.available()) 
+//  {
+//    Serial.read();
+//  }
 
   int n = 0;
   uint32_t start = millis();
+  char breakVal = '^';
+  char curVal;
   
-  while (n < 8) {
-    // 1 second timeout
-    if (millis() - start > 1000)
-    {
-//      Serial.print("break");
-        break;
-    }
-
+  do{
     if (Serial.available()) {
-        incomingByte[n++] = Serial.read();
+      curVal = Serial.read() + 64;
+        incomingByte[n++] = curVal;
     }
-    else {}
-  }
-
+    else {break;}
+    
+  }while(curVal != breakVal);
+  
   n = 0;
   while(n < 8)
   {
-    Serial.write(64 + incomingByte[n++]);
+    Serial.write(incomingByte[n++]);
   }
   
-  Serial.write(10);
+  Serial.print("\n");
 
   sensorValue = analogRead(A0);                       // Read input from analog pin a0 and store in val
   mappedValue = map(sensorValue, 0, 1023,1000,2000);  // Mapping val to min and max //1021?
@@ -89,7 +85,7 @@ void loop()
   sensors_event_t event;
   bno.getEvent(&event);
   
-  /* Display the floating point data 
+  //Display the floating point data 
   Serial.print("Yaw: ");
   Serial.print(event.orientation.x, 4);
   Serial.print("\tPitch: ");
@@ -97,6 +93,6 @@ void loop()
   Serial.print("\tRoll: ");
   Serial.print(event.orientation.z, 4);
   Serial.println("");
-*/
-  delay(500);
+
+//  delay(500);
 }

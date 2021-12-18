@@ -14,7 +14,7 @@ def Joystick_Init():
     # Ensure device(s) found
     assert joysticks, "No joystick device is connected"
     # Select joystick
-    joystick = joysticks[4]
+    joystick = joysticks[0]
     count = 0
     for i in joysticks:
         print(count, i.device)
@@ -45,7 +45,7 @@ def processInputs():
     print('xConv: {}\nyConv: {}\nzConv: {}'.format(xConv, yConv, zConv))
     print()
 
-    elements = [xConv, yConv, zConv, 0, 0, 0, 0, 0]
+    elements = [xConv, yConv, zConv, 0, 0, 0, 0, 30]
     data = bytearray(elements)
     vect = list(data)
     print(vect)
@@ -65,16 +65,19 @@ def convertToInt(value):
     value = int(math.ceil(value * 10) + 10)
     return value
 
-def periodicFunc(dt):       # can control write data w/ specified periodicity
+
+def periodicFunc(dt):  # can control write data w/ specified periodicity
     print("triggered")
 
-def checkSerial(dt):       # serial test
+
+def checkSerial(dt):  # serial test
     n = arduinoData.in_waiting
     if n > 0:
         databytes = arduinoData.read(n)
         arduinoString = str(databytes, encoding='utf-8')
         print("n: ", n)
         print("checkSerial: ", arduinoString)
+
 
 ################################# End define functions #################################
 
@@ -83,7 +86,7 @@ def checkSerial(dt):       # serial test
 Joystick_Init()
 
 # Connect to Xbee
-arduinoData = serial.Serial('COM7', 9600, serial.EIGHTBITS)
+arduinoData = serial.Serial('COM5', 9600, serial.EIGHTBITS)
 
 
 @joystick.event
