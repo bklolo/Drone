@@ -1,8 +1,9 @@
-#include <Servo.h>
+#include <Drone_Funcs.h>
 
 int sensorValue, mappedValue;
 Servo esc5, esc6, esc7, esc8;
-#define SAMPLERATE_DELAY_MS (100)
+
+#define SAMPLERATE_DELAY_MS 100
 
 void setup()
 {
