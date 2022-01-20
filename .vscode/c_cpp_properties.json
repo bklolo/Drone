@@ -15,21 +15,22 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
+                "${workspaceFolder}/arduino-1.8.19/hardware/arduino/avr/libraries/SPI/src",
                 "${workspaceFolder}/arduino-1.8.19/hardware/arduino/avr/cores/arduino",
                 "${workspaceFolder}/arduino-1.8.19/hardware/arduino/avr/variants/eightanaloginputs",
                 "${workspaceFolder}/arduino-1.8.19/hardware/arduino/avr/libraries/Wire/src",
                 "${workspaceFolder}/arduino-1.8.19/libraries/Servo/src",
-                "${workspaceFolder}/arduino-1.8.19/libraries/Adafruit_Unified_Sensor",
+                "${workspaceFolder}/arduino-1.8.19/libraries/Adafruit_Unified_Sensor/",
                 "${workspaceFolder}/arduino-1.8.19/libraries/Adafruit_BNO055",
                 "${workspaceFolder}/arduino-1.8.19/libraries/Adafruit_BusIO",
                 "${workspaceFolder}/arduino-1.8.19/libraries/ArduPID/src",
                 "${workspaceFolder}/arduino-1.8.19/libraries/FireTimer/src",
                 "${workspaceFolder}/arduino-1.8.19/libraries/Keyboard/src",
                 "${workspaceFolder}/arduino-1.8.19/hardware/arduino/avr/libraries/HID/src",
-                "${workspaceFolder}/arduino-1.8.19/libraries/WiFi/extras/wifi_dnld/src/SOFTWARE_FRAMEWORK/DRIVERS/SPI",
                 "${workspaceFolder}/arduino-1.8.19/hardware/tools/avr/lib/gcc/avr/7.3.0/include",
-                "${workspaceFolder}/arduino-1.8.19/hardware/tools/avr/lib/gcc/avr/7.3.0/include-fixed"
-
+                "${workspaceFolder}/arduino-1.8.19/hardware/tools/avr/lib/gcc/avr/7.3.0/include-fixed",
+                "${workspaceFolder}/arduino-1.8.19/libraries/Adafruit_BNO055/utility",
+                "${workspaceFolder}/arduino-1.8.19/libraries/SD/src"
             ],
             "forcedInclude": [
                 "${workspaceFolder}/arduino-1.8.19/hardware/arduino/avr/cores/arduino/Arduino.h"
