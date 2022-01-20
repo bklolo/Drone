@@ -1,8 +1,0 @@
-{
-    "port": "COM3",
-    "configuration": "cpu=atmega328old",
-    "board": "arduino:avr:nano",
-    "output": "build",
-    "programmer": "arduino:avrispmkii",
-    "sketch": "drone.ino"
-}
