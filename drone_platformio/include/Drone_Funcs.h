@@ -1,7 +1,7 @@
 #ifndef Drone_Funcs
 #define Drone_Funcs
 
-#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
 
 typedef struct Quad {
     double roll;
@@ -20,5 +20,6 @@ void initESCs();
 void testSD();
 void initBNO055(Adafruit_BNO055 *bno);
 void initPIDs();
+void testMotors(int delay_ms, uint8_t pin, long in_min, long in_max, long out_min, long out_max);
 
 #endif

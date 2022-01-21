@@ -237,7 +237,6 @@ void testSD()
 
 void initBNO055(Adafruit_BNO055 *bno)
 {
-    /////////////// BNO CODE BEGIN ///////////////
     /* Initialise the sensor */
     if (!bno->begin())
     {
@@ -247,8 +246,6 @@ void initBNO055(Adafruit_BNO055 *bno)
     }
     delay(100);
     bno->setExtCrystalUse(true);
-
-    /////////////// BNO CODE END ///////////////
 }
 
 void initPIDs()
@@ -256,4 +253,21 @@ void initPIDs()
     rollController.begin(&iRoll, &oRoll, &setpoint, p, i, d);
     pitchController.begin(&iPitch, &oPitch, &setpoint, p, i, d);
     yawController.begin(&iYaw, &oYaw, &setpoint, p, i, d);
+}
+
+void testMotors(int delay_ms, uint8_t pin, long in_min, long in_max, long out_min, long out_max){
+    int sensorValue = analogRead(A0);
+    mappedValue = map(sensorValue, 0, 1024, 1000, 2000);
+
+    esc5.writeMicroseconds(mappedValue);
+    esc6.writeMicroseconds(mappedValue);
+    esc7.writeMicroseconds(mappedValue);
+    esc8.writeMicroseconds(mappedValue);
+
+    Serial.print("Pot value: ");
+    Serial.print(sensorValue);
+    Serial.print(",Mapped value: ");
+    Serial.println(mappedValue);
+
+    delay(delay_ms);
 }
