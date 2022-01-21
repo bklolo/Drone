@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Drone_Funcs.h>
+#include "Drone_Funcs.h"
 #include <Servo.h> // Servo library to control ESC
 #include <Wire.h>
 #include <Adafruit_BNO055.h>
@@ -9,63 +9,51 @@
 #include <SD.h>
 #include <SPI.h>
 
-// ArduPID vars
-ArduPID rollController;
-ArduPID pitchController;
-ArduPID yawController;
 double setpoint = 0;
-double iRoll;
-double oRoll;
-double iPitch;
-double oPitch;
-double iYaw;
-double oYaw;
+double xoffset, yoffset, zoffset = 0;
+double iRoll, oRoll;
+double iPitch, oPitch;
+double iYaw, oYaw;
 double p = 1;
 double i = 0;
 double d = 0;
-// end ArduPID vars
-
-Servo esc5, esc6, esc7, esc8;              // ESCs, respective pinout
-Adafruit_BNO055 bno = Adafruit_BNO055(55); // IMU instance
-int sensorValue, mappedValue;              // pot vals
-int incomingByte[8];                       // incoming serial data
-uint8_t sys, gyro, accel, mag;
-float xoffset, yoffset, zoffset = 0;
-bool isCalibrated = false;
-
+float adjustedYaw;
+int sensorValue, mappedValue, incomingByte[8];
+ArduPID rollController, pitchController, yawController;
+Servo esc5, esc6, esc7, esc8;
 File myFile;
 
-void calculateResponse(sensors_event_t event)
+void calculateResponse(sensors_event_t event, Quad *error, Quad *pos)
 {
     //Roll data
-    quad.roll = event.orientation.z - zoffset;
-    iRoll = abs(quad.roll) * -1; // roll data only
+    pos->roll = event.orientation.z - zoffset;
+    iRoll = abs(pos->roll) * -1; // roll data only
     rollController.compute();
 
     Serial.print("Roll: ");
-    Serial.print(quad.roll, 4);
+    Serial.print(pos->roll, 4);
     Serial.print(',');
     Serial.print("Roll error: ");
     Serial.println(oRoll);
     // end Roll data
 
     // Pitch data
-    quad.pitch = event.orientation.y - yoffset;
-    iPitch = abs(quad.pitch) * -1;
+    pos->pitch = event.orientation.y - yoffset;
+    iPitch = abs(pos->pitch) * -1;
     pitchController.compute();
 
     Serial.print("Pitch: ");
-    Serial.print(quad.pitch, 4);
+    Serial.print(pos->pitch, 4);
     Serial.print(',');
     Serial.print("Pitch error: ");
     Serial.println(oPitch);
     // end Pitch data
 
     // Yaw data
-    quad.yaw = event.orientation.x - xoffset;
-    float adjustedYaw = quad.yaw;
+    pos->yaw = event.orientation.x - xoffset;
+    float adjustedYaw = pos->yaw;
 
-    if (quad.yaw > 180)
+    if (pos->yaw > 180)
     {
         adjustedYaw = (adjustedYaw - 360) * -1;
     }
@@ -74,12 +62,16 @@ void calculateResponse(sensors_event_t event)
     yawController.compute();
 
     Serial.print("Yaw: ");
-    Serial.print(quad.yaw, 4);
+    Serial.print(pos->yaw, 4);
     Serial.print(", AdjustedYaw: ");
     Serial.print(adjustedYaw, 4);
     Serial.print(',');
     Serial.print("Yaw error: ");
     Serial.println(oYaw);
+
+    error->roll = oRoll;
+    error->pitch = oPitch;
+    error->yaw = oYaw;
 
     delay(1000);
 }
@@ -147,9 +139,11 @@ void normalizeInput(sensors_event_t event)
     zoffset = event.orientation.z;
 }
 
-void calibrate(sensors_event_t event)
+void calibrate(Adafruit_BNO055 *bno, sensors_event_t event)
 {
-    bno.getCalibration(&sys, &gyro, &accel, &mag);
+    uint8_t sys, gyro, accel, mag;
+    sys = gyro = accel = mag = 0;
+    bno->getCalibration(&sys, &gyro, &accel, &mag);
     Serial.print("Sys:");
     Serial.print(sys, DEC);
     Serial.print(" G:");
@@ -241,22 +235,25 @@ void testSD()
     /////////////// SD CODE END ///////////////
 }
 
-void initBNO055()
+void initBNO055(Adafruit_BNO055 *bno)
 {
     /////////////// BNO CODE BEGIN ///////////////
     /* Initialise the sensor */
-    if (!bno.begin())
+    if (!bno->begin())
     {
         Serial.print("No BNO055 detected!");
         while (true)
             ; // end; do nothing
     }
     delay(100);
-    bno.setExtCrystalUse(true);
+    bno->setExtCrystalUse(true);
 
     /////////////// BNO CODE END ///////////////
 }
 
-void setup(){
-    
+void initPIDs()
+{
+    rollController.begin(&iRoll, &oRoll, &setpoint, p, i, d);
+    pitchController.begin(&iPitch, &oPitch, &setpoint, p, i, d);
+    yawController.begin(&iYaw, &oYaw, &setpoint, p, i, d);
 }
