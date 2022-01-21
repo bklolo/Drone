@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Drone_Funcs.h"
+#include "drone_defs.h"
 #include <Servo.h> // Servo library to control ESC
 #include <Wire.h>
 #include <Adafruit_BNO055.h>
@@ -216,7 +216,6 @@ void initESCs()
 
 void testSD()
 {
-    /////////////// SD CODE BEGIN ///////////////
     const int SD_pin = 8;
 
     pinMode(SD_pin, OUTPUT);
@@ -232,7 +231,6 @@ void testSD()
     myFile.println("asdfasdfasdfasfasdfasdf");
     myFile.close();
     Serial.print("File is good...");
-    /////////////// SD CODE END ///////////////
 }
 
 void initBNO055(Adafruit_BNO055 *bno)

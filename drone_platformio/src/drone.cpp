@@ -5,7 +5,7 @@
 #include <ArduPID.h>
 #include <SD.h>
 #include <SPI.h>
-#include "Drone_Funcs.h"
+#include "drone_defs.h"
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55); // IMU instance
 bool isCalibrated = false;
@@ -13,7 +13,7 @@ bool isCalibrated = false;
 /*Testing Motors*/
 bool testingMotors = false;
 int delay_ms = 100;
-uint8_t pin = 'A0';
+uint8_t pin = A0;
 long in_min = 0;
 long in_max = 1024;
 long out_min = 1000;
@@ -32,7 +32,7 @@ void setup()
 
 void loop()
 {
-    if(testingMotors){
+    while(testingMotors){
         testMotors(delay_ms, pin, in_min, in_max, out_min, out_max);
     }
     // Get a new BNO sensor event

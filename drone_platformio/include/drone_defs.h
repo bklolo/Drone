@@ -1,5 +1,5 @@
-#ifndef Drone_Funcs
-#define Drone_Funcs
+#ifndef drone_defs
+#define drone_defs
 
 #include <Adafruit_BNO055.h>
 
