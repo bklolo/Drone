@@ -32,10 +32,11 @@ void setup()
 
 void loop()
 {
+    // test motors with onboard potentiometer
     while(testingMotors){
         testMotors(delay_ms, pin, in_min, in_max, out_min, out_max);
     }
-    // Get a new BNO sensor event
+
     sensors_event_t event;
     bno.getEvent(&event);
     Quad error, pos;

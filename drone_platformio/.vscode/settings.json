@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "ardupid.h": "c",
-        "arduino.h": "c",
-        "firetimer.h": "c"
-    }
-}
