@@ -20,7 +20,7 @@ double d = 0;
 float adjustedYaw;
 int sensorValue, mappedValue, incomingByte[8];
 ArduPID rollController, pitchController, yawController;
-Servo esc5, esc6, esc7, esc8;
+Servo motor1, motor2, motor3, motor4;
 File myFile;
 
 void calculateResponse(sensors_event_t event, Quad *error, Quad *pos)
@@ -79,18 +79,18 @@ void calculateResponse(sensors_event_t event, Quad *error, Quad *pos)
 void writeToESCsRoll(double error, double roll)
 {
 
-    mappedValue = map(error, 0, 255, 1000, 2000); // Mapping val to min and max //1021?
+    mappedValue = map(error, 0, 255, 1000, 2000);
     Serial.print("roll mapped:");
     Serial.print(mappedValue);
     if (roll > 0)
     {
-        esc5.writeMicroseconds(mappedValue); // Write mapped sensor value to esc5
-        esc6.writeMicroseconds(mappedValue); // Write mapped sensor value to esc6
+        motor1.writeMicroseconds(mappedValue);
+        motor2.writeMicroseconds(mappedValue);
     }
     else
     {
-        esc7.writeMicroseconds(mappedValue); // Write mapped sensor value to esc7
-        esc8.writeMicroseconds(mappedValue); // Write mapped sensor value to esc8
+        motor3.writeMicroseconds(mappedValue);
+        motor4.writeMicroseconds(mappedValue);
     }
 }
 
@@ -171,13 +171,13 @@ void writeToESCsPitch(double error, double pitch)
     Serial.print(mappedValue);
     if (pitch > 0)
     {
-        esc6.writeMicroseconds(mappedValue);
-        esc7.writeMicroseconds(mappedValue);
+        motor2.writeMicroseconds(mappedValue);
+        motor3.writeMicroseconds(mappedValue);
     }
     else
     {
-        esc5.writeMicroseconds(mappedValue);
-        esc8.writeMicroseconds(mappedValue);
+        motor1.writeMicroseconds(mappedValue);
+        motor4.writeMicroseconds(mappedValue);
     }
 }
 
@@ -188,49 +188,70 @@ void writeToESCsYaw(double error, double yaw)
     Serial.println(mappedValue);
     if (yaw < 180)
     {
-        esc5.writeMicroseconds(mappedValue);
-        esc7.writeMicroseconds(mappedValue);
+        motor1.writeMicroseconds(mappedValue);
+        motor2.writeMicroseconds(mappedValue);
     }
     else
     {
-        esc6.writeMicroseconds(mappedValue);
-        esc8.writeMicroseconds(mappedValue);
+        motor3.writeMicroseconds(mappedValue);
+        motor4.writeMicroseconds(mappedValue);
     }
 
     //sensorValue = analogRead(A0);                       // Read input from analog pin a0 and store in val
     mappedValue = map(sensorValue, 0, 1023, 1000, 2000); // Mapping val to min and max //1021?
 }
 
-void initESCs()
+void initESCs(int D4, int D5, int D6, int D7)
 {
-    // Specify ESC pins (D5-D8) and initialize to 1000
-    esc5.attach(5);
-    esc5.writeMicroseconds(1000);
-    esc6.attach(6);
-    esc6.writeMicroseconds(1000);
-    esc7.attach(7);
-    esc7.writeMicroseconds(1000);
-    esc8.attach(8); // pin 8 used for SPI
-    esc8.writeMicroseconds(1000);
+    // Attach each motor and their respective ESC to digital pin
+    motor1.attach(D4);
+    motor1.writeMicroseconds(1000);
+
+    motor2.attach(D5);
+    motor2.writeMicroseconds(1000);
+    
+    motor3.attach(D6);
+    motor3.writeMicroseconds(1000);
+    
+    motor4.attach(D7);
+    motor4.writeMicroseconds(1000);
 }
 
 void testSD()
 {
     const int SD_pin = 8;
-
+    String fileName = "data.txt";
     pinMode(SD_pin, OUTPUT);
 
-    if (!SD.begin(8))
+    if (!SD.begin(SD_pin))
     {
         Serial.println("initialization failed!");
         return;
     }
-
     Serial.println("initialization done.");
-    myFile = SD.open("data.txt", FILE_WRITE);
-    myFile.println("asdfasdfasdfasfasdfasdf");
-    myFile.close();
-    Serial.print("File is good...");
+    myFile = SD.open(fileName, FILE_WRITE);
+
+    if (myFile) {
+        Serial.print("Writing to file...");
+        myFile.println("testing 1, 2, 3.");
+        myFile.close();
+        Serial.println("done.");
+    } else {
+        Serial.println("error opening file"); // if the file didn't open, print an error
+    }
+
+    myFile = SD.open("file"); // re-open the file for reading
+
+    if (myFile) {
+        Serial.println("file:");
+    
+    while (myFile.available()) {    // read from the file until there's nothing else in it
+        Serial.write(myFile.read());
+    }
+    myFile.close(); // then close the file
+    } else {
+        Serial.println("error opening file"); // if the file didn't open, print an error
+    }
 }
 
 void initBNO055(Adafruit_BNO055 *bno)
@@ -253,18 +274,18 @@ void initPIDs()
     yawController.begin(&iYaw, &oYaw, &setpoint, p, i, d);
 }
 
-void testMotors(int delay_ms, uint8_t pin, long in_min, long in_max, long out_min, long out_max){
-    int sensorValue = analogRead(A0);
+void testMotors(uint8_t pin, int delay_ms, long in_min, long in_max, long out_min, long out_max){
+    int sensorValue = analogRead(pin);
     mappedValue = map(sensorValue, 0, 1024, 1000, 2000);
 
-    esc5.writeMicroseconds(mappedValue);
-    esc6.writeMicroseconds(mappedValue);
-    esc7.writeMicroseconds(mappedValue);
-    esc8.writeMicroseconds(mappedValue);
+    motor1.writeMicroseconds(mappedValue);
+    motor2.writeMicroseconds(mappedValue);
+    motor3.writeMicroseconds(mappedValue);
+    motor4.writeMicroseconds(mappedValue);
 
     Serial.print("Pot value: ");
-    Serial.print(sensorValue);
-    Serial.print(",Mapped value: ");
+    Serial.println(sensorValue);
+    Serial.print("Mapped value: ");
     Serial.println(mappedValue);
 
     delay(delay_ms);

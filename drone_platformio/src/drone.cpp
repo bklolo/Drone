@@ -10,20 +10,31 @@
 Adafruit_BNO055 bno = Adafruit_BNO055(55); // IMU instance
 bool isCalibrated = false;
 
+/*ESC pins*/
+int D4 = 4;
+int D5 = 5;
+int D6 = 6;
+int D7 = 7;
+/*ESC pins*/
+
 /*Testing Motors*/
 bool testingMotors = false;
-int delay_ms = 100;
 uint8_t pin = A0;
+int delay_ms = 100;
 long in_min = 0;
 long in_max = 1024;
 long out_min = 1000;
 long out_max = 2000;
 /*Testing Motors*/
 
+/*Testing SD & BNO*/
+bool testingSD = true;
+/*Testing SD & BNO*/
+
 void setup()
 {
     Serial.begin(9600); // default baudrate
-    initESCs();
+    initESCs(D4, D5, D6, D7);
     testSD();
     delay(500);
     initBNO055(&bno);
@@ -34,7 +45,7 @@ void loop()
 {
     // test motors with onboard potentiometer
     while(testingMotors){
-        testMotors(delay_ms, pin, in_min, in_max, out_min, out_max);
+        testMotors(pin, delay_ms, in_min, in_max, out_min, out_max);
     }
 
     sensors_event_t event;

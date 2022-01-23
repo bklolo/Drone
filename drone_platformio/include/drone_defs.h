@@ -16,10 +16,10 @@ void normalizeInput(sensors_event_t event);
 void calibrate(Adafruit_BNO055 *bno, sensors_event_t event);
 void writeToESCsPitch(double error, double pitch);
 void writeToESCsYaw(double error, double yaw);
-void initESCs();
+void initESCs(int D4, int D5, int D6, int D7);
 void testSD();
 void initBNO055(Adafruit_BNO055 *bno);
 void initPIDs();
-void testMotors(int delay_ms, uint8_t pin, long in_min, long in_max, long out_min, long out_max);
+void testMotors(uint8_t pin, int delay_ms, long in_min, long in_max, long out_min, long out_max);
 
 #endif
